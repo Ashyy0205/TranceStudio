@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Trance Studio</title>
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="#c8f04f"/>
+  <rect x="91.00" y="91.00" width="330.00" height="330.00" rx="66.00" transform="rotate(0 256 256)" fill="none" stroke="#141414" stroke-width="15.00"/>
+  <rect x="117.40" y="117.40" width="277.20" height="277.20" rx="55.44" transform="rotate(9 256 256)" fill="none" stroke="#141414" stroke-width="13.95"/>
+  <rect x="139.58" y="139.58" width="232.85" height="232.85" rx="46.57" transform="rotate(18 256 256)" fill="none" stroke="#141414" stroke-width="12.97"/>
+  <rect x="158.20" y="158.20" width="195.59" height="195.59" rx="39.12" transform="rotate(27 256 256)" fill="none" stroke="#141414" stroke-width="12.07"/>
+  <rect x="173.85" y="173.85" width="164.30" height="164.30" rx="32.86" transform="rotate(36 256 256)" fill="none" stroke="#141414" stroke-width="11.22"/>
+  <rect x="187.00" y="187.00" width="138.01" height="138.01" rx="27.60" transform="rotate(45 256 256)" fill="none" stroke="#141414" stroke-width="10.44"/>
+  <rect x="198.04" y="198.04" width="115.93" height="115.93" rx="23.19" transform="rotate(54 256 256)" fill="none" stroke="#141414" stroke-width="9.70"/>
+  <rect x="207.31" y="207.31" width="97.38" height="97.38" rx="19.48" transform="rotate(63 256 256)" fill="none" stroke="#141414" stroke-width="9.03"/>
+  <rect x="215.10" y="215.10" width="81.80" height="81.80" rx="16.36" transform="rotate(72 256 256)" fill="none" stroke="#141414" stroke-width="8.39"/>
+  <rect x="221.64" y="221.64" width="68.71" height="68.71" rx="13.74" transform="rotate(81 256 256)" fill="none" stroke="#141414" stroke-width="7.81"/>
+  <rect x="227.14" y="227.14" width="57.72" height="57.72" rx="11.54" transform="rotate(90 256 256)" fill="#141414" stroke="#141414" stroke-width="7.26"/>
+</svg>

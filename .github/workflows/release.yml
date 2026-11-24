@@ -1,0 +1,107 @@
+# Every push to main builds the Windows and Linux packages and publishes them
+# as the next patch release of the version in package.json: with 1.0.0 there,
+# the builds are v1.0.0, v1.0.1, v1.0.2 and so on. For a minor or major release,
+# set the version in package.json to 1.1.0 or 2.0.0; the next push builds that
+# version and later pushes continue with its patches (v1.1.1, v1.1.2, ...).
+# A version's tag is only created once both builds have succeeded, so a failed
+# build doesn't use up a number. Running the workflow by hand from the Actions
+# tab does the same.
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# One release at a time, so two quick pushes can't claim the same number.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.next.outputs.tag }}
+      version: ${{ steps.next.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Work out the next version
+        id: next
+        run: |
+          base=$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')")
+          esc=${base//./\\.}
+          last=$(git tag --list "v${base}.*" | sed -nE "s/^v${esc}\.([0-9]+)$/\1/p" | sort -n | tail -1)
+          if [ -z "$last" ]; then patch=0; else patch=$((last + 1)); fi
+          echo "tag=v${base}.${patch}" >> "$GITHUB_OUTPUT"
+          echo "version=${base}.${patch}" >> "$GITHUB_OUTPUT"
+          echo "Building v${base}.${patch}"
+
+  build:
+    needs: version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: --win
+            files: |
+              dist/Trance-Studio-*.exe
+          - os: ubuntu-latest
+            target: --linux
+            files: |
+              dist/*.AppImage
+              dist/*.deb
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Set the version
+        shell: bash
+        run: npm version "${{ needs.version.outputs.version }}" --no-git-tag-version --allow-same-version
+
+      - run: npm run typecheck
+
+      - run: npm run build
+
+      - name: Package
+        run: npx electron-builder ${{ matrix.target }} --publish never
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: packages-${{ matrix.os }}
+          path: ${{ matrix.files }}
+          if-no-files-found: error
+
+  release:
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: packages
+          merge-multiple: true
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.version.outputs.tag }}
+        run: |
+          gh release create "$TAG" packages/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Trance Studio $TAG" \
+            --generate-notes

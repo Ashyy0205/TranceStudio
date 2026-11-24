@@ -1,0 +1,7 @@
+node_modules/
+out/
+dist/
+*.log
+
+# Private developer notes
+DEV-NOTES.md
